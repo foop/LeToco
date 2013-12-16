@@ -175,7 +175,7 @@ class TowersCliDisplay:
    target is the index of the target tower (captain obvious)
    
    if you want to move a disc from tower zero to 
-   tower to you would call the function 
+   tower two you would call the function 
    like this:
    moveOne(g, 0, 2)
 """
