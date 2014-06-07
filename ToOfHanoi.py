@@ -1,3 +1,4 @@
+#!/usr/bin/env python
 from sys import stdout
 
 class Disc:
@@ -5,7 +6,7 @@ class Disc:
         self.size = size
         
     def __str__(self):
-        return str(self.size)
+        return '(' + '//' * self.size  + ')'
         
     def __repr__(self):
         return str(self.size)
@@ -52,7 +53,14 @@ class Tower:
         self
         
     def __str__(self):
-        return self.__repr__()
+        sM = self.maxSize
+        poleStrings = [ (sM - 1) * ' ' + ' || ' + (sM - 1) * ' ' for _ in xrange(sM - self.size()) ]
+        diskStrings = [ (sM - d.size) * ' ' + str(d) + (sM - d.size) * ' ' for d in self.discs ]
+        diskStrings.reverse()
+        titleStringBlank = (sM - len(str(self.name)) / 2 ) * ' '
+        titleString = titleStringBlank + '#' +  str(self.name) + titleStringBlank  + '\n\n'
+        return titleString + '\n'.join(poleStrings + diskStrings)
+            
         
     def __repr__(self):
         return str(self.discs)
@@ -114,7 +122,7 @@ class Game:
     def move(self, a, b):
         if self.gameIsOn:
             try:
-                print ("move no: %d\ntrying to move a disc from tower no: %d to tower no: %d\n" % (self.noOfMoves + 1, a, b))
+                print ("Move no: %d\nTrying to move top disc from tower %d to tower %d\n" % (self.noOfMoves + 1, a, b))
                 self.towers[b].append(self.towers[a].pop())
                 self.noOfMoves += 1
                 self.display.display(self.towers, self.size)
@@ -141,32 +149,9 @@ class Game:
 """prints a list of towers to stdout"""
 class TowersCliDisplay:    
     def display(self, towers, maxSize):
-        for lineNo in xrange(0, maxSize):
-            for t in towers:
-                stdout.write('  ')
-                if maxSize - lineNo - t.size() <= 0:
-                    nextSize = t[maxSize - lineNo - 1].size 
-                else:
-                    nextSize = 0
-                self.getDiscString(nextSize, maxSize)
-                stdout.write('  ')            
-            print
-        print
-        
-    def getDiscString(self, size, maxSize):
-        blanks = maxSize - size
-        if size == 0:
-            blanks = blanks - 1
-        for i in xrange(0, blanks):
-            stdout.write(' ')
-        if size != 0:
-            for i in xrange(0, size):
-                stdout.write('##')
-        else:
-            stdout.write('||')
-        for i in xrange(0, blanks):
-            stdout.write(' ')
-            
+        tStrings = zip(*[t.__str__().split('\n') for t in towers ])
+        for line in tStrings:
+            print ''.join(line)
 
 """example function
 
@@ -181,7 +166,7 @@ class TowersCliDisplay:
 """
 def moveOne(g, src, target):
     g.move(src, target)
-                  
+
        
 if __name__ == "__main__":
     size = 7
